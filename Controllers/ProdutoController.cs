@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PedidosNet.Data;
-using PedidosNet.Models;
+using PedidosNet.Domain.Models;
+using PedidosNet.DTOs;
 
 namespace PedidosNet.Controllers;
 

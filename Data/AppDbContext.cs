@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using PedidosNet.Models;
+using PedidosNet.Domain.Models;
+
 
 namespace PedidosNet.Data;
 
