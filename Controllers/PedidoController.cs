@@ -19,9 +19,65 @@ public class PedidoController : ControllerBase
         _context = context;
         _pedidoFactory = pedidoFactory;
     }
+    #region --- CRIAR KIT
+    [HttpPost("kit")]
+    public async Task<IActionResult> CriarKit(CreatePedidoKitRequest request)
+    {
+        var cliente = await _context.Clientes.FindAsync(request.ClienteId);
+        if (cliente is null) return BadRequest("Cliente não encontrado.");
+        if (cliente.Bloqueado) return BadRequest("Cliente bloqueado. Não é possível criar pedidos.");
+
+        var itens = new List<ItemPedido>();
+
+        var produtosAdicionados = new HashSet<Guid>();
+        decimal pesoAcumulado = 0;
+        decimal valorAcumulado = 0;
+        const decimal pesoMaximoKit = 5.0m;
+
+        foreach (var itemRequest in request.Itens)
+        {
+            var produto = await _context.Produtos.FindAsync(itemRequest.ProdutoId);
+            if (produto is null) return BadRequest($"Produto {itemRequest.ProdutoId} não encontrado.");
+
+            // Verifica se o produto já foi adicionado ao kit
+            if (produtosAdicionados.Contains(produto.Id)) return BadRequest($"Produto {produto.Nome} já foi adicionado ao kit.");
+
+            // Verifica se o peso acumulado excede o limite
+            var pesoItem = produto.Peso * itemRequest.Quantidade;
+
+            if (pesoAcumulado + pesoItem > pesoMaximoKit) return BadRequest($"Peso máximo do kit excedido. Peso atual: {pesoAcumulado + pesoItem} kg, Peso máximo permitido: {pesoMaximoKit} kg.");
+
+            pesoAcumulado+= pesoItem;
+            valorAcumulado += produto.Preco * itemRequest.Quantidade;
+            produtosAdicionados.Add(produto.Id);
+
+            // Adiciona o produto ao kit
+            itens.Add(new ItemPedido
+            {
+                Id = Guid.NewGuid(),
+                ProdutoId = produto.Id,
+                NomeProduto = produto.Nome,
+                Preco = produto.Preco,
+                Quantidade = itemRequest.Quantidade
+            });
+        }
+
+        if(produtosAdicionados.Count < 2) return BadRequest("Um kit deve conter pelo menos 2 produtos diferentes.");
+
+        if(!string.IsNullOrEmpty(request.CupomDesconto) && valorAcumulado <= 300)
+        {
+            return BadRequest("Para utilizar o cupom de desconto, o valor total do kit deve ser superior a R$ 300,00.");
+        }
+
+        var pedido = _pedidoFactory.Criar(cliente, itens);
+        return Ok(pedido.Id);
+        
+
+    }
+    #endregion
+
 
     #region --- CRIAR PEDIDO
-
     [HttpPost]
     public async Task<IActionResult> Criar(CreatePedidoRequest request)
     {
