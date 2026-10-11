@@ -6,6 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
     <RootNamespace>PedidosNet</RootNamespace>
+    <!--
+      O projeto Domain vive numa subpasta deste projeto web. O SDK Web inclui
+      todos os .cs recursivamente por padrão, então sem esta exclusão ele
+      compilaria os fontes do Domain em duplicidade (erros CS0436/CS0579).
+      A referência ao Domain é feita via <ProjectReference> abaixo.
+    -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);PedidosNet.Domain\**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PedidosNet.Domain\PedidosNet.Domain.csproj" />
+    <ProjectReference Include="PedidosNet.Domain\PedidosNet.Domain.csproj" />
   </ItemGroup>
 
 </Project>
