@@ -15,6 +15,12 @@ namespace PedidosNet.Domain.Strategies
         {
             _strategiesEmOrdem = strategies.ToList().AsReadOnly();
         }
-        public IEnumerable<IDescontoStrategy> Selecionar(Pedido pedido) => _strategiesEmOrdem.Where(s => s.AplicarPara(pedido));
+        public IEnumerable<IDescontoStrategy> Selecionar(Pedido pedido)
+        {
+            // _strategiesEmOrdem.Where(s => s.AplicarPara(pedido));
+            var aplicaveis = _strategiesEmOrdem.Where(s => s.AplicarPara(pedido)).ToList();
+            var exclusiva = aplicaveis.FirstOrDefault(s => s.Exclusiva);
+            return exclusiva is not null ? new[] { exclusiva } : aplicaveis;
+        }
     }
 }

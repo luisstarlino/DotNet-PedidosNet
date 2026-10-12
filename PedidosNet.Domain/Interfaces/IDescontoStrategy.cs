@@ -11,5 +11,6 @@ namespace PedidosNet.Domain.Interfaces
     {
         bool AplicarPara(Pedido pedido);
         decimal CalcularDesconto(Pedido pedido);
+        bool Exclusiva => false;
     }
 }

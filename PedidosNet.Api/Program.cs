@@ -29,6 +29,7 @@ builder.Services.AddScoped<IPedidoFactory, PedidoFactory>();
 builder.Services.AddScoped<IDescontoStrategy, DescontoVip>();
 builder.Services.AddScoped<IDescontoStrategy, DescontoValorPedido>();
 builder.Services.AddScoped<IDescontoStrategy, DescontoCupom>();
+builder.Services.AddScoped<IDescontoStrategy, DescontoSemanaDosPais>();
 builder.Services.AddScoped<SeletorDeDesconto>();
 
 
