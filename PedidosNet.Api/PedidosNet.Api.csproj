@@ -18,17 +18,14 @@
 
     <!--
       Swagger via Swashbuckle. NÃO adicionar Microsoft.AspNetCore.OpenApi aqui:
-      as duas libs conflitam no pipeline de geração de OpenAPI — 
+      as duas libs conflitam no pipeline de geração de OpenAPI —
 	  Swashbuckle sozinho resolve tudo que este baseline precisa.
     -->
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <!-- Clean Architecture: a camada Api depende da Domain (projeto irmão). -->
     <ProjectReference Include="..\PedidosNet.Domain\PedidosNet.Domain.csproj" />
   </ItemGroup>
 

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PedidosNet.Data;
 using PedidosNet.Domain.Factory;
 using PedidosNet.Domain.Interfaces;
+using PedidosNet.Domain.Strategies;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +26,12 @@ builder.Services.AddSwaggerGen(c =>
 
 // D.I — Injeção de dependência: registra a implementação concreta PedidoFactory para a interface IPedidoFactory.
 builder.Services.AddScoped<IPedidoFactory, PedidoFactory>();
+builder.Services.AddScoped<IDescontoStrategy, DescontoVip>();
+builder.Services.AddScoped<IDescontoStrategy, DescontoValorPedido>();
+builder.Services.AddScoped<IDescontoStrategy, DescontoCupom>();
+builder.Services.AddScoped<IDescontoStrategy, DescontoSemanaDosPais>();
+builder.Services.AddScoped<SeletorDeDesconto>();
+
 
 var app = builder.Build();
 
