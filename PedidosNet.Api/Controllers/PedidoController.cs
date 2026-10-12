@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PedidosNet.Data;
 using PedidosNet.Domain.Interfaces;
 using PedidosNet.Domain.Models;
+using PedidosNet.Domain.Strategies;
 using PedidosNet.DTOs;
 
 namespace PedidosNet.Controllers;
@@ -13,11 +14,13 @@ public class PedidoController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly IPedidoFactory _pedidoFactory;
+    private readonly SeletorDeDesconto _seletorDescontos;
 
-    public PedidoController(AppDbContext context, IPedidoFactory pedidoFactory)
+    public PedidoController(AppDbContext context, IPedidoFactory pedidoFactory, SeletorDeDesconto seletorDescontos)
     {
         _context = context;
         _pedidoFactory = pedidoFactory;
+        _seletorDescontos = seletorDescontos;
     }
     #region --- CRIAR KIT
     [HttpPost("kits")]
@@ -42,10 +45,8 @@ public class PedidoController : ControllerBase
             if (!string.IsNullOrWhiteSpace(request.CupomDesconto)) builder.AplicarCupom(request.CupomDesconto);
 
             var pedido = builder.Build();
-            _context.Pedidos.Add(pedido);
-            await _context.SaveChangesAsync();
 
-            return Ok(pedido.Id);
+            return await FinalizarPedido(pedido);
         }
         catch (Exception ex)
         {
@@ -84,17 +85,15 @@ public class PedidoController : ControllerBase
 
         // --- Criando um Pedido
         var pedido = _pedidoFactory.Criar(cliente, itens);
+        return await FinalizarPedido(pedido);
+    }
 
-        // ⚠️ Regras de negócio direto no controller — o primeiro sinal amarelo
-        // piscando no painel . A partir daqui, cada nova regra
-        // (cliente corporativo, campanha, valor mínimo...) só engorda este método.
-        if (cliente.Vip) pedido.Total -= pedido.Total * 0.10m;
-
-        if (pedido.Total > 2000) pedido.Total -= pedido.Total * 0.05m;
-
+    private async Task<IActionResult> FinalizarPedido(Pedido pedido)
+    {
+        var strategies = _seletorDescontos.Selecionar(pedido);
+        pedido.AplicarDesconto(strategies);
         _context.Pedidos.Add(pedido);
         await _context.SaveChangesAsync();
-
         return Ok(pedido.Id);
     }
 

@@ -16,6 +16,7 @@ namespace PedidosNet.Domain.Factory
             {
                 Id = Guid.NewGuid(),
                 ClienteId = cliente.Id,
+                Cliente = cliente,
                 EnderecoEntrega = cliente.Endereco,
                 DataCriacao = DateTime.Now,
 

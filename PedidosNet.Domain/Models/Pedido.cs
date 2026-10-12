@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PedidosNet.Domain.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,10 +32,14 @@ namespace PedidosNet.Domain.Models
             Total = Itens.Sum(i => i.Quantidade * i.Preco);
         }
 
-        public void AplicarCupom(string cupom, decimal percentual)
+        public void AplicarDesconto(IEnumerable<IDescontoStrategy> strategies)
         {
-            Total -= Total * percentual;
-            CuponDesconto = cupom;
+            foreach (var strategy in strategies)
+            {
+                var desconto = strategy.CalcularDesconto(this);
+                Total -= desconto;
+            }
+
         }
     }
 }

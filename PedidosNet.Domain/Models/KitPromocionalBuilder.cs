@@ -79,7 +79,7 @@ namespace PedidosNet.Domain.Models
             var pedido = _pedidoFactory.Criar(_cliente, _itens);
 
             if (_cupomDesconto is not null)
-                pedido.AplicarCupom(_cupomDesconto, PercentualCupom);
+                pedido.CuponDesconto = _cupomDesconto;
 
             return pedido;
         }
