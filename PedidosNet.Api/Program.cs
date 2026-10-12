@@ -55,3 +55,8 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
+
+// Exposto para o projeto de testes (WebApplicationFactory<Program>).
+// Program.cs usa top-level statements, que geram uma classe Program interna;
+// esta declaração parcial torna o tipo acessível aos testes de integração.
+public partial class Program { }
