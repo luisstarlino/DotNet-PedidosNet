@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="PedidosNet.Api/PedidosNet.Api.csproj" />
   <Project Path="PedidosNet.Domain/PedidosNet.Domain.csproj" Id="35fcd043-4197-4c48-8317-aca2e23a5358" />
+  <Project Path="PedidosNet.Tests/PedidosNet.Tests.csproj" />
 </Solution>
